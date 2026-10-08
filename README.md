@@ -36,8 +36,15 @@ Network automation tooling distilled from **10+ years of carrier-grade telecom e
 telco-network-automation/
 ├── src/
 │   ├── __init__.py
-│   └── subnet_prober.py      # parallel TCP reachability prober with latency stats
-├── requirements-free         # stdlib only: no pip install needed
+│   ├── subnet_prober.py      # parallel TCP reachability prober with latency stats
+│   └── config_drift.py       # config drift detection vs golden baseline (difflib)
+├── tests/
+│   └── test_config_drift.py  # unit tests with fixed config samples
+├── examples/
+│   ├── baseline.cfg          # golden baseline sample
+│   └── running.cfg           # drifted running-config sample
+├── pyproject.toml            # ruff lint config
+├── .pre-commit-config.yaml
 └── .github/workflows/ci.yml
 ```
 
@@ -55,25 +62,30 @@ Useful for fleet health checks before configuration rollouts:
 python -m src.subnet_prober --cidr 10.20.0.0/22 --port 830 --output netconf_gate.csv
 ```
 
+### Config drift detection
+
+Diff a running config against its golden baseline: added/removed lines with security-critical patterns (`password`, `snmp`, `tacacs`, `ssh-key`, ...) flagged, exported as CSV:
+
+```bash
+python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg
+# drift=9 added=6 removed=3 sensitive=2 output=drift_report.csv
+```
+
 ## Results
 
-Sample run against a simulated /24 fleet (SSH port 22):
+Sample drift run (examples/ vs golden baseline):
 
 | Metric | Value |
 |---|---:|
-| Hosts probed | 254 |
-| Reachable | TBD |
-| p50 connect latency | TBD |
-
-![Fleet reachability](results/fleet_reachability.png)
-
-> Reports are exported as CSV per run; figures are populated as case studies are added.
+| Drift findings | 9 |
+| Lines added / removed | 6 / 3 |
+| Security-sensitive findings | 2 (SNMP community + HTTP server) |
 
 ## Roadmap
 
+- [x] Configuration drift detection against golden baselines
 - [ ] NETCONF/RESTCONF configuration push with dry-run validation
 - [ ] Device inventory collection from controller REST APIs
-- [ ] Configuration drift detection against golden baselines
 - [ ] Alarm correlation for RAN KPI degradation
 
 ## License

@@ -13,9 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install ruff
-        run: pip install "ruff==0.16.9"
+      - name: Install dependencies
+        run: pip install "ruff==0.16.9" pytest
       - name: Lint
         run: ruff check .
-      - name: Smoke test
+      - name: Unit tests
+        run: python -m pytest tests/ -q
+      - name: Smoke test prober
         run: python -m src.subnet_prober --cidr 127.0.0.1/32 --port 22 --output smoke.csv
+      - name: Smoke test drift detector
+        run: python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg --output drift_smoke.csv
