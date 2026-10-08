@@ -6,7 +6,7 @@
 
 ## Objective
 
-Network automation tooling distilled from **10+ years of carrier-grade telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
+Network automation tooling distilled from **+12 years of carrier-grade telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
 
 ## Architecture
 
