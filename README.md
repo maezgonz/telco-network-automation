@@ -41,8 +41,13 @@ telco-network-automation/
 ├── tests/
 │   └── test_config_drift.py  # unit tests with fixed config samples
 ├── examples/
+│   ├── mop_template.md       # generic carrier-grade Method of Procedure template
+│   ├── atp_template.md       # generic Acceptance Test Procedure template
+│   ├── ran_config_sample.cfg # synthetic multi-technology MML config (invented data)
 │   ├── baseline.cfg          # golden baseline sample
 │   └── running.cfg           # drifted running-config sample
+├── docs/
+│   └── confidentiality.md    # masking & confidentiality policy
 ├── pyproject.toml            # ruff lint config
 ├── .pre-commit-config.yaml
 └── .github/workflows/ci.yml
@@ -70,6 +75,16 @@ Diff a running config against its golden baseline: added/removed lines with secu
 python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg
 # drift=9 added=6 removed=3 sensitive=2 output=drift_report.csv
 ```
+
+### Carrier-grade templates and samples
+
+Distilled from 10+ years of network operations in mobile networks (2G/3G/4G/5G, RAN and core):
+
+- **[examples/mop_template.md](examples/mop_template.md)** — generic Method of Procedure: preconditions, timed steps, validation KPIs and rollback plan
+- **[examples/atp_template.md](examples/atp_template.md)** — generic Acceptance Test Procedure: hardware + functional test tables and acceptance criteria
+- **[examples/ran_config_sample.cfg](examples/ran_config_sample.cfg)** — synthetic multi-technology site configuration (GSM/UMTS/LTE, MML-style)
+
+All values are invented placeholders; see the [confidentiality policy](docs/confidentiality.md).
 
 ## Results
 
