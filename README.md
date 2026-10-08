@@ -1,4 +1,4 @@
-# telco-network-automation
+﻿# telco-network-automation
 
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Language](https://img.shields.io/badge/Python-stdlib%20%7C%20concurrent-3776AB)
@@ -6,7 +6,7 @@
 
 ## Objective
 
-Network automation tooling distilled from **10+ years of carrier-grade telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
+Network automation tooling distilled from **17 years of telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
 
 ## Architecture
 
@@ -78,7 +78,7 @@ python -m src.config_drift --running examples/running.cfg --baseline examples/ba
 
 ### Carrier-grade templates and samples
 
-Distilled from 10+ years of network operations in mobile networks (2G/3G/4G/5G, RAN and core):
+Distilled from 17 years of network operations in mobile networks (2G/3G/4G/5G, RAN and core):
 
 - **[examples/mop_template.md](examples/mop_template.md)** — generic Method of Procedure: preconditions, timed steps, validation KPIs and rollback plan
 - **[examples/atp_template.md](examples/atp_template.md)** — generic Acceptance Test Procedure: hardware + functional test tables and acceptance criteria
