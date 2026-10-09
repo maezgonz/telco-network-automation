@@ -47,11 +47,7 @@ telco-network-automation/
 │   ├── baseline.cfg          # golden baseline sample
 │   └── running.cfg           # drifted running-config sample
 ├── docs/
-│   ├── confidentiality.md    # masking & confidentiality policy
-│   ├── ran_kpi_reference.md  # 3GPP-standard KPI definitions, formulas and targets
-│   ├── alarm_correlation.md  # alarm severity, correlation patterns, MTTR
-│   ├── ran_stress_testing.md # controller stress testing & redundancy methodology
-│   └── rni_emf_reference.md  # ICNIRP-based EMF immission analysis reference
+│   └── confidentiality.md    # masking & confidentiality policy
 ├── pyproject.toml            # ruff lint config
 ├── .pre-commit-config.yaml
 └── .github/workflows/ci.yml
@@ -82,14 +78,9 @@ python -m src.config_drift --running examples/running.cfg --baseline examples/ba
 
 ### Carrier-grade knowledge base
 
-Reference documents distilled from 17 years in telecom and mission-critical infrastructure (12 in mobile network operations, RAN and core):
+The telecom engineering knowledge base lives in the companion repository — **[telco-engineering-handbook](https://github.com/maezgonz/telco-engineering-handbook)**: 7 reference documents (3GPP KPIs, alarm correlation, stress testing, EMF analysis, MML reference, spectrum refarming, core evolution) distilled from 17 years in mission-critical infrastructure.
 
-- **[docs/ran_kpi_reference.md](docs/ran_kpi_reference.md)** — 3GPP-standard KPI definitions: accessibility, retainability, mobility, utilization — formulas, targets and engineering drivers
-- **[docs/alarm_correlation.md](docs/alarm_correlation.md)** — alarm severity taxonomy (ITU-T X.733), lifecycle, root-cause correlation patterns in alarm storms, and the path from reactive alarms to proactive KPIs
-- **[docs/ran_stress_testing.md](docs/ran_stress_testing.md)** — controller stress testing & redundancy validation methodology: failover, load, MTTR and soak tests
-- **[docs/rni_emf_reference.md](docs/rni_emf_reference.md)** — non-ionizing radiation (EMF) immission analysis: ICNIRP reference levels, measurement methodology, hot-spot mitigation
-
-All content is standards-based (3GPP, ITU-T, ICNIRP — public standards) or anonymized methodology; no operator, vendor or confidential material. See the [confidentiality policy](docs/confidentiality.md).
+The templates here operationalize that knowledge; the handbook documents it.
 
 ### Carrier-grade templates and samples
 
