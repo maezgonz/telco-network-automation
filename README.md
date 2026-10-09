@@ -47,7 +47,11 @@ telco-network-automation/
 │   ├── baseline.cfg          # golden baseline sample
 │   └── running.cfg           # drifted running-config sample
 ├── docs/
-│   └── confidentiality.md    # masking & confidentiality policy
+│   ├── confidentiality.md    # masking & confidentiality policy
+│   ├── ran_kpi_reference.md  # 3GPP-standard KPI definitions, formulas and targets
+│   ├── alarm_correlation.md  # alarm severity, correlation patterns, MTTR
+│   ├── ran_stress_testing.md # controller stress testing & redundancy methodology
+│   └── rni_emf_reference.md  # ICNIRP-based EMF immission analysis reference
 ├── pyproject.toml            # ruff lint config
 ├── .pre-commit-config.yaml
 └── .github/workflows/ci.yml
@@ -75,6 +79,17 @@ Diff a running config against its golden baseline: added/removed lines with secu
 python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg
 # drift=9 added=6 removed=3 sensitive=2 output=drift_report.csv
 ```
+
+### Carrier-grade knowledge base
+
+Reference documents distilled from 17 years in telecom and mission-critical infrastructure (12 in mobile network operations, RAN and core):
+
+- **[docs/ran_kpi_reference.md](docs/ran_kpi_reference.md)** — 3GPP-standard KPI definitions: accessibility, retainability, mobility, utilization — formulas, targets and engineering drivers
+- **[docs/alarm_correlation.md](docs/alarm_correlation.md)** — alarm severity taxonomy (ITU-T X.733), lifecycle, root-cause correlation patterns in alarm storms, and the path from reactive alarms to proactive KPIs
+- **[docs/ran_stress_testing.md](docs/ran_stress_testing.md)** — controller stress testing & redundancy validation methodology: failover, load, MTTR and soak tests
+- **[docs/rni_emf_reference.md](docs/rni_emf_reference.md)** — non-ionizing radiation (EMF) immission analysis: ICNIRP reference levels, measurement methodology, hot-spot mitigation
+
+All content is standards-based (3GPP, ITU-T, ICNIRP — public standards) or anonymized methodology; no operator, vendor or confidential material. See the [confidentiality policy](docs/confidentiality.md).
 
 ### Carrier-grade templates and samples
 
