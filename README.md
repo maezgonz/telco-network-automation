@@ -1,4 +1,4 @@
-﻿# telco-network-automation
+# telco-network-automation
 
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Language](https://img.shields.io/badge/Python-stdlib%20%7C%20concurrent-3776AB)
@@ -7,6 +7,12 @@
 ## Objective
 
 Network automation tooling distilled from **17 years of telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
+
+## Demo
+
+![Fleet probe demo - TCP connect latency distribution across public resolvers](docs/img/dns_probe_demo.png)
+
+*Live run of [`examples/dns_probe_demo.py`](examples/dns_probe_demo.py): 30 TCP connects per host through `subnet_prober` - p50 ranges from 12.6 ms (OpenDNS) to 44.1 ms (Wikipedia).*
 
 ## Architecture
 
