@@ -6,7 +6,7 @@
 
 ## Objective
 
-Network automation tooling distilled from **17 years of telecom engineering** at Telefónica Argentina (2G/3G/4G/5G, core and access, Ericsson/Huawei/ZTE). The repository applies the performance discipline of HPC to network operations: bounded concurrency, strict timeouts and measurable latency — not fire-and-forget scripts.
+Synthetic, testable tooling for network operations: bounded connectivity probes and configuration-drift reporting. The examples are independent reconstructions for public demonstration; they do not represent Telefónica, a vendor, or a production network.
 
 ## Demo
 
@@ -43,9 +43,13 @@ telco-network-automation/
 ├── src/
 │   ├── __init__.py
 │   ├── subnet_prober.py      # parallel TCP reachability prober with latency stats
-│   └── config_drift.py       # config drift detection vs golden baseline (difflib)
+│   ├── config_drift.py       # config drift detection vs golden baseline (difflib)
+│   ├── atp_runner.py         # deterministic acceptance checks against fixtures
+│   └── synthetic_labs.py     # deployment, resilience, stress and alarm labs
 ├── tests/
-│   └── test_config_drift.py  # unit tests with fixed config samples
+│   ├── test_config_drift.py  # unit tests with fixed config samples
+│   ├── test_atp_runner.py    # local ATP checks and failure modes
+│   └── test_synthetic_labs.py # deterministic lab scenarios and failure modes
 ├── examples/
 │   ├── mop_template.md       # generic carrier-grade Method of Procedure template
 │   ├── atp_template.md       # generic Acceptance Test Procedure template
@@ -75,22 +79,56 @@ python -m src.subnet_prober --cidr 10.20.0.0/22 --port 830 --output netconf_gate
 
 ### Config drift detection
 
-Diff a running config against its golden baseline: added/removed lines with security-critical patterns (`password`, `snmp`, `tacacs`, `ssh-key`, ...) flagged, exported as CSV:
+Diff a running config against its golden baseline. Added and removed lines matching security-sensitive patterns (`password`, `snmp`, `tacacs`, `ssh-key`, ...) are classified as `critical`; other changes are classified as `warning`. The tool writes CSV and can optionally write structured JSON:
 
 ```bash
-python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg
-# drift=9 added=6 removed=3 sensitive=2 output=drift_report.csv
+python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg --json-output drift_report.json
+# drift=... added=... removed=... sensitive=... output=drift_report.csv
 ```
 
-### Carrier-grade knowledge base
+The tool only detects and reports drift. It does not connect to devices or apply configuration changes.
 
-The telecom engineering knowledge base lives in the companion repository — **[telco-engineering-handbook](https://github.com/maezgonz/telco-engineering-handbook)**: 7 reference documents (3GPP KPIs, alarm correlation, stress testing, EMF analysis, MML reference, spectrum refarming, core evolution) distilled from 17 years in mission-critical infrastructure.
+### Synthetic ATP runner
+
+Run local acceptance checks against a deliberately fictional environment fixture:
+
+```bash
+python -m src.atp_runner \
+  --spec examples/atp_spec.json \
+  --fixture examples/atp_fixture.json \
+  --output atp_report.json
+# checks=3 failed=0 status=PASS
+```
+
+The runner supports configuration-presence, service-state and connectivity checks.
+Checks can include a bounded synthetic duration to exercise timeout handling. A failed
+acceptance check returns exit code `1`; malformed input returns `2`. No network connection
+is made and no device is modified.
+
+### Synthetic operational labs
+
+The lab runner executes five deterministic scenarios from a JSON fixture:
+
+```bash
+python -m src.synthetic_labs \
+  --fixtures examples/synthetic_lab_fixtures.json \
+  --output labs_report.json
+# labs=5 failed=0 status=PASS
+```
+
+The scenarios cover deployment prechecks, rollback restoration, simulated
+active/standby failover, bounded load/error-rate stress and alarm correlation.
+They do not open sockets, generate traffic or interact with infrastructure.
+
+### Engineering handbook
+
+The engineering methodology lives in the companion repository — **[telco-engineering-handbook](https://github.com/maezgonz/telco-engineering-handbook)**: public-standard references plus a procedure map for ATP, resilience, stress testing, upgrades, integrations, troubleshooting, baselines, expansions and reconfigurations.
 
 The templates here operationalize that knowledge; the handbook documents it.
 
 ### Carrier-grade templates and samples
 
-Distilled from 17 years of network operations in mobile networks (2G/3G/4G/5G, RAN and core):
+The examples are generic and synthetic:
 
 - **[examples/mop_template.md](examples/mop_template.md)** — generic Method of Procedure: preconditions, timed steps, validation KPIs and rollback plan
 - **[examples/atp_template.md](examples/atp_template.md)** — generic Acceptance Test Procedure: hardware + functional test tables and acceptance criteria
@@ -113,6 +151,8 @@ Sample drift run (examples/ vs golden baseline):
 - [x] Configuration drift detection against golden baselines
 - [ ] NETCONF/RESTCONF configuration push with dry-run validation
 - [ ] Device inventory collection from controller REST APIs
+- [x] Synthetic ATP checks with JSON report and CI gate
+- [x] Synthetic alarm correlation with fixtures
 - [ ] Alarm correlation for RAN KPI degradation
 
 ## License

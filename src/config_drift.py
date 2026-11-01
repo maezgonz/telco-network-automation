@@ -5,11 +5,14 @@ from __future__ import annotations
 import argparse
 import csv
 import difflib
+import json
 import re
 import sys
 from dataclasses import dataclass
 
 DEFAULT_FLAG_PATTERN = r"(?i)(password|secret|snmp|community|tacacs|radius|ssh-key)"
+SEVERITY_SENSITIVE = "critical"
+SEVERITY_DRIFT = "warning"
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,7 @@ class DriftRecord:
     kind: str
     line: str
     sensitive: bool
+    severity: str
 
 
 def read_config(path: str) -> list[str]:
@@ -64,24 +68,29 @@ def detect_drift(running: list[str], baseline: list[str], flag_pattern: str) -> 
     matcher = difflib.SequenceMatcher(None, baseline, running, autojunk=False)
     records: list[DriftRecord] = []
 
+    def record(kind: str, line: str) -> DriftRecord:
+        sensitive = classify(line, flag_pattern)
+        severity = SEVERITY_SENSITIVE if sensitive else SEVERITY_DRIFT
+        return DriftRecord(kind, line, sensitive, severity)
+
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
         if tag == "delete":
             records.extend(
-                DriftRecord("removed", line, classify(line, flag_pattern))
+                record("removed", line)
                 for line in baseline[i1:i2]
             )
         elif tag == "insert":
             records.extend(
-                DriftRecord("added", line, classify(line, flag_pattern))
+                record("added", line)
                 for line in running[j1:j2]
             )
         elif tag == "replace":
             records.extend(
-                DriftRecord("removed", line, classify(line, flag_pattern))
+                record("removed", line)
                 for line in baseline[i1:i2]
             )
             records.extend(
-                DriftRecord("added", line, classify(line, flag_pattern))
+                record("added", line)
                 for line in running[j1:j2]
             )
     return records
@@ -99,8 +108,24 @@ def write_csv(records: list[DriftRecord], output: str) -> None:
     """
     with open(output, "w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["kind", "sensitive", "line"])
-        writer.writerows((r.kind, r.sensitive, r.line) for r in records)
+        writer.writerow(["kind", "severity", "sensitive", "line"])
+        writer.writerows((r.kind, r.severity, r.sensitive, r.line) for r in records)
+
+
+def write_json(records: list[DriftRecord], output: str) -> None:
+    """Write drift findings as structured JSON."""
+    payload = [
+        {
+            "kind": record.kind,
+            "severity": record.severity,
+            "sensitive": record.sensitive,
+            "line": record.line,
+        }
+        for record in records
+    ]
+    with open(output, "w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2)
+        handle.write("\n")
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,8 +133,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Config drift detection against golden baseline")
     parser.add_argument("--running", required=True, help="Current device config file")
     parser.add_argument("--baseline", required=True, help="Golden baseline config file")
-    parser.add_argument("--flag-pattern", default=DEFAULT_FLAG_PATTERN, help="Regex for sensitive lines")
+    parser.add_argument(
+        "--flag-pattern",
+        default=DEFAULT_FLAG_PATTERN,
+        help="Regex for sensitive lines",
+    )
     parser.add_argument("--output", default="drift_report.csv", help="Output CSV path")
+    parser.add_argument("--json-output", help="Optional structured JSON report path")
     return parser.parse_args()
 
 
@@ -121,6 +151,8 @@ def main() -> int:
         baseline = read_config(args.baseline)
         records = detect_drift(running, baseline, args.flag_pattern)
         write_csv(records, args.output)
+        if args.json_output:
+            write_json(records, args.json_output)
     except OSError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

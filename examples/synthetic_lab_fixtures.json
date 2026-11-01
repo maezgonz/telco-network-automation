@@ -1,0 +1,30 @@
+{
+  "deployment_prechecks": {
+    "backup_verified": true,
+    "maintenance_window": true,
+    "dependencies_ready": true
+  },
+  "rollback_validation": {
+    "change_applied": true,
+    "baseline_state": "baseline-v1",
+    "restored_state": "baseline-v1"
+  },
+  "failover_simulation": {
+    "standby_ready": true,
+    "service_after_failover": "available"
+  },
+  "controlled_stress": {
+    "offered_load": 80,
+    "capacity": 100,
+    "error_rate": 0.02,
+    "max_error_rate": 0.05
+  },
+  "alarm_correlation": {
+    "root_cause": "transport-link-01",
+    "alarms": [
+      {"id": "A-001", "cause": "transport-link-01"},
+      {"id": "A-002", "cause": "transport-link-01"},
+      {"id": "A-003", "cause": "transport-link-01"}
+    ]
+  }
+}

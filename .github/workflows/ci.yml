@@ -23,3 +23,7 @@ jobs:
         run: python -m src.subnet_prober --cidr 127.0.0.1/32 --port 22 --output smoke.csv
       - name: Smoke test drift detector
         run: python -m src.config_drift --running examples/running.cfg --baseline examples/baseline.cfg --output drift_smoke.csv
+      - name: Synthetic ATP
+        run: python -m src.atp_runner --spec examples/atp_spec.json --fixture examples/atp_fixture.json --output atp_smoke.json
+      - name: Synthetic labs
+        run: python -m src.synthetic_labs --fixtures examples/synthetic_lab_fixtures.json --output labs_smoke.json

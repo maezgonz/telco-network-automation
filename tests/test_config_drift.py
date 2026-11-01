@@ -1,10 +1,19 @@
 ﻿"""Unit tests for the config drift detector (fixed samples, no network)."""
 
+import json
 import os
 
 import pytest
 
-from src.config_drift import DEFAULT_FLAG_PATTERN, classify, detect_drift, read_config
+from src.config_drift import (
+    DEFAULT_FLAG_PATTERN,
+    SEVERITY_DRIFT,
+    SEVERITY_SENSITIVE,
+    classify,
+    detect_drift,
+    read_config,
+    write_json,
+)
 
 BASELINE = [
     "hostname router-edge-01",
@@ -47,7 +56,27 @@ def test_detect_drift_sensitive_flagging():
     records = detect_drift(RUNNING, BASELINE, DEFAULT_FLAG_PATTERN)
     sensitive_lines = [r.line for r in records if r.sensitive]
     assert "snmp-server community s3cr3t RW" in sensitive_lines
-    assert all(r.sensitive is False or "community" in r.line or "shutdown" not in r.line for r in records)
+    assert next(r for r in records if r.sensitive).severity == SEVERITY_SENSITIVE
+    assert all(
+        r.sensitive is False or "community" in r.line or "shutdown" not in r.line
+        for r in records
+    )
+
+
+def test_detect_drift_assigns_warning_to_non_sensitive_changes():
+    records = detect_drift(RUNNING, BASELINE, DEFAULT_FLAG_PATTERN)
+    route_record = next(
+        r for r in records if r.line == "ip route 0.0.0.0 0.0.0.0 10.0.0.254"
+    )
+    assert route_record.severity == SEVERITY_DRIFT
+
+
+def test_write_json_preserves_structured_findings(tmp_path):
+    output = tmp_path / "drift.json"
+    write_json(detect_drift(RUNNING, BASELINE, DEFAULT_FLAG_PATTERN), str(output))
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload
+    assert {"kind", "severity", "sensitive", "line"} <= payload[0].keys()
 
 
 def test_detect_drift_no_drift():

@@ -1,0 +1,22 @@
+{
+  "name": "synthetic-edge-node-acceptance",
+  "checks": [
+    {
+      "id": "CFG-001",
+      "type": "config_contains",
+      "line": "interface uplink0 enabled"
+    },
+    {
+      "id": "SVC-001",
+      "type": "service_state",
+      "service": "transport",
+      "expected": "ready"
+    },
+    {
+      "id": "NET-001",
+      "type": "connectivity",
+      "endpoint": "core-sim-01",
+      "expected": "reachable"
+    }
+  ]
+}

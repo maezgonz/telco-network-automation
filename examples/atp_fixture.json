@@ -1,0 +1,13 @@
+{
+  "config": [
+    "interface uplink0 enabled",
+    "clock source synthetic-reference"
+  ],
+  "services": {
+    "transport": "ready",
+    "session-control": "ready"
+  },
+  "connectivity": {
+    "core-sim-01": "reachable"
+  }
+}
